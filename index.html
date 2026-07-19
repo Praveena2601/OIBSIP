@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyFlow — Master Your Study Time</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ink:#14162B;
+      --ink-soft:#464A63;
+      --muted:#6B7280;
+      --base:#FAFBFF;
+      --panel:#FFFFFF;
+      --lavender:#EEEBFF;
+      --line:#E6E5F5;
+      --primary:#5B5FEF;
+      --primary-dark:#4347C4;
+      --teal:#2DD4BF;
+      --violet:#8B5CF6;
+      --grad-1: linear-gradient(135deg,#5B5FEF 0%, #8B5CF6 55%, #2DD4BF 100%);
+      --shadow-sm: 0 1px 2px rgba(20,22,43,0.06);
+      --shadow-md: 0 8px 24px rgba(20,22,43,0.08);
+      --shadow-lg: 0 24px 60px rgba(20,22,43,0.14);
+      --radius: 20px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto;}
+      *,*::before,*::after{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}
+    }
+    body{
+      font-family:'Inter',sans-serif;
+      color:var(--ink);
+      background:var(--base);
+      line-height:1.5;
+      -webkit-font-smoothing:antialiased;
+    }
+    h1,h2,h3,h4{font-family:'Poppins',sans-serif;letter-spacing:-0.01em;}
+    a{text-decoration:none;color:inherit;}
+    ul{list-style:none;}
+    img,svg{display:block;}
+    button{font-family:inherit;cursor:pointer;}
+    .container{max-width:1180px;margin:0 auto;padding:0 32px;}
+    :focus-visible{outline:2.5px solid var(--primary);outline-offset:3px;border-radius:6px;}
+
+    header{
+      position:sticky;top:0;z-index:100;
+      background:rgba(250,251,255,0.82);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--line);
+    }
+    .nav{display:flex;align-items:center;justify-content:space-between;height:76px;gap:16px;position:relative;}
+    .brand{display:flex;align-items:center;gap:10px;font-family:'Poppins',sans-serif;font-weight:700;font-size:1.15rem;z-index:3;}
+    .brand-mark{
+      width:34px;height:34px;border-radius:10px;background:var(--grad-1);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .brand-mark svg{width:18px;height:18px;}
+
+    .nav-links{display:flex;align-items:center;gap:36px;font-size:0.94rem;font-weight:500;color:var(--ink-soft);}
+    .nav-links a{position:relative;padding:6px 0;transition:color .2s ease;}
+    .nav-links a:hover{color:var(--ink);}
+    .nav-links a::after{
+      content:'';position:absolute;left:0;bottom:0;width:0;height:2px;background:var(--grad-1);transition:width .25s ease;
+    }
+    .nav-links a:hover::after{width:100%;}
+
+    .nav-cta{display:flex;align-items:center;gap:18px;position:relative;z-index:3;}
+
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:13px 26px;border-radius:12px;font-weight:600;font-size:0.94rem;
+      border:none;transition:transform .2s ease,box-shadow .2s ease,background .2s ease;
+      white-space:nowrap;
+    }
+    .btn-primary{background:var(--grad-1);color:#fff;box-shadow:0 10px 24px rgba(91,95,239,0.30);}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 32px rgba(91,95,239,0.38);}
+    .btn-ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);}
+    .btn-ghost:hover{border-color:var(--primary);color:var(--primary);background:var(--lavender);}
+    .btn-small{padding:10px 18px;font-size:0.86rem;}
+
+    /* Mobile toggle (checkbox hack) */
+    #nav-toggle{display:none;}
+    .nav-toggle-btn{
+      display:none;
+      background:none;
+      border:none;
+      padding:8px;
+      cursor:pointer;
+      z-index:4;
+    }
+    .nav-toggle-btn span{
+      display:block;
+      width:22px;
+      height:2px;
+      background:var(--ink);
+      margin:5px 0;
+      transition:.3s;
+    }
+    #nav-toggle:checked + .nav-toggle-btn span:nth-child(1){
+      transform:translateY(7px) rotate(45deg);
+    }
+    #nav-toggle:checked + .nav-toggle-btn span:nth-child(2){
+      opacity:0;
+    }
+    #nav-toggle:checked + .nav-toggle-btn span:nth-child(3){
+      transform:translateY(-7px) rotate(-45deg);
+    }
+
+    .mobile-menu{
+      display:none;
+      position:absolute;
+      top:76px;
+      left:0;
+      width:100%;
+      background:rgba(250,251,255,0.98);
+      border-bottom:1px solid var(--line);
+      box-shadow:0 18px 40px rgba(20,22,43,0.08);
+      z-index:2;
+    }
+    #nav-toggle:checked ~ .mobile-menu{
+      display:block;
+    }
+    .mobile-menu a{
+      display:block;
+      padding:16px 32px;
+      border-top:1px solid var(--line);
+      font-weight:600;
+      color:var(--ink-soft);
+    }
+    .mobile-menu a:hover{
+      background:var(--lavender);
+      color:var(--ink);
+    }
+
+    .hero{position:relative;overflow:hidden;padding:100px 0 70px;}
+    .hero-glow{
+      position:absolute;inset:-20% -10% auto -10%;height:640px;
+      background:radial-gradient(60% 60% at 30% 20%, rgba(91,95,239,0.16), transparent 70%),
+                 radial-gradient(50% 50% at 80% 10%, rgba(45,212,191,0.16), transparent 70%);
+      z-index:0;pointer-events:none;
+    }
+    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr 0.95fr;gap:64px;align-items:center;}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;background:var(--lavender);color:var(--primary-dark);
+      font-size:0.82rem;font-weight:600;padding:8px 14px;border-radius:100px;margin-bottom:22px;
+    }
+    .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);}
+    .hero h1{font-size:3.4rem;font-weight:700;line-height:1.1;letter-spacing:-0.02em;margin-bottom:22px;}
+    .hero h1 .grad{background:var(--grad-1);-webkit-background-clip:text;background-clip:text;color:transparent;}
+    .hero p.lead{font-size:1.13rem;color:var(--ink-soft);max-width:520px;margin-bottom:34px;}
+    .hero-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:38px;}
+    .play-link{display:flex;align-items:center;gap:10px;font-weight:600;font-size:0.94rem;color:var(--ink);}
+    .play-circle{
+      width:38px;height:38px;border-radius:50%;background:var(--panel);box-shadow:var(--shadow-sm);
+      display:flex;align-items:center;justify-content:center;border:1px solid var(--line);transition:.2s;
+    }
+    .play-link:hover .play-circle{background:var(--lavender);border-color:var(--primary);}
+    .hero-proof{display:flex;align-items:center;gap:14px;}
+    .avatars{display:flex;}
+    .avatars span{
+      width:34px;height:34px;border-radius:50%;border:2.5px solid var(--base);margin-left:-10px;
+      display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:700;color:#fff;
+    }
+    .avatars span:first-child{margin-left:0;}
+    .hero-proof-text{font-size:0.86rem;color:var(--muted);}
+    .hero-proof-text strong{color:var(--ink);}
+
+    .hero-visual{position:relative;}
+    .float-card{
+      position:absolute;background:var(--panel);border-radius:16px;box-shadow:var(--shadow-lg);
+      border:1px solid var(--line);padding:14px 16px;z-index:3;
+    }
+    .float-card.timer{
+      top:-6%;left:-8%;display:flex;align-items:center;gap:12px;
+      animation:float1 6s ease-in-out infinite;
+    }
+    .float-card.streak{
+      bottom:6%;right:-10%;display:flex;align-items:center;gap:10px;
+      animation:float2 7s ease-in-out infinite;
+    }
+    @keyframes float1{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+    @keyframes float2{0%,100%{transform:translateY(0);}50%{transform:translateY(10px);}}
+    .ring{
+      --p:68;width:52px;height:52px;border-radius:50%;
+      background:conic-gradient(var(--primary) calc(var(--p)*1%), var(--line) 0);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+    }
+    .ring-inner{
+      width:38px;height:38px;border-radius:50%;background:var(--panel);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'JetBrains Mono',monospace;font-weight:600;font-size:0.68rem;color:var(--primary-dark);
+    }
+    .float-card .label{font-size:0.72rem;color:var(--muted);font-weight:500;}
+    .float-card .value{font-size:0.92rem;font-weight:700;font-family:'JetBrains Mono',monospace;}
+
+    .hero-panel{
+      position:relative;z-index:2;background:var(--panel);border-radius:24px;border:1px solid var(--line);
+      box-shadow:var(--shadow-lg);padding:26px;overflow:hidden;
+    }
+    .hero-panel::before{
+      content:'';position:absolute;inset:0;opacity:.5;
+      background:radial-gradient(120% 60% at 100% 0%, rgba(139,92,246,0.10), transparent 60%);
+      pointer-events:none;
+    }
+    .panel-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+    .panel-topbar .dots{display:flex;gap:6px;}
+    .panel-topbar .dots span{width:9px;height:9px;border-radius:50%;background:var(--line);}
+    .panel-topbar .title{font-size:0.8rem;font-weight:600;color:var(--muted);}
+    .panel-big-ring{
+      width:168px;height:168px;border-radius:50%;margin:8px auto 18px;
+      background:conic-gradient(var(--primary) 0%, var(--violet) 45%, var(--teal) 68%, var(--line) 0);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .panel-big-ring .inner{
+      width:132px;height:132px;border-radius:50%;background:var(--panel);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+      box-shadow:inset 0 0 0 1px var(--line);
+    }
+    .panel-big-ring .inner .time{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.5rem;}
+    .panel-big-ring .inner .tag{font-size:0.7rem;color:var(--muted);font-weight:600;letter-spacing:.03em;text-transform:uppercase;}
+    .panel-tasks{display:flex;flex-direction:column;gap:10px;}
+    .panel-task{
+      display:flex;align-items:center;gap:10px;padding:10px 12px;
+      border:1px solid var(--line);border-radius:12px;font-size:0.82rem;background:#fff;
+    }
+    .panel-task .check{width:16px;height:16px;border-radius:5px;flex-shrink:0;}
+    .panel-task .check.done{background:var(--teal);}
+    .panel-task .check.pending{border:1.5px solid var(--line);}
+    .panel-task span.txt{flex:1;font-weight:500;}
+    .panel-task .tag-pill{font-size:0.68rem;font-weight:700;padding:3px 8px;border-radius:100px;color:#fff;}
+
+    section{padding:110px 0;}
+    .section-head{max-width:640px;margin:0 auto 60px;text-align:center;}
+    .section-eyebrow{
+      display:inline-flex;align-items:center;gap:8px;font-size:0.8rem;font-weight:700;
+      color:var(--primary-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;
+    }
+    .section-eyebrow .ring-tick{
+      width:16px;height:16px;border-radius:50%;
+      background:conic-gradient(var(--primary) 75%, var(--line) 0);
+      flex-shrink:0;
+    }
+    .section-head h2{font-size:2.3rem;font-weight:700;margin-bottom:16px;letter-spacing:-0.02em;}
+    .section-head p{color:var(--muted);font-size:1.05rem;}
+
+    @keyframes bounceIn{
+      0%{opacity:0;transform:translateY(36px);}
+      55%{opacity:1;transform:translateY(-10px);}
+      75%{transform:translateY(5px);}
+      90%{transform:translateY(-2px);}
+      100%{opacity:1;transform:translateY(0);}
+    }
+    .reveal{opacity:0;animation:bounceIn 0.9s cubic-bezier(.28,.9,.4,1.2) forwards;animation-delay:.15s;}
+
+    .features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+    .feature-card{
+      background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+      padding:32px 28px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
+      position:relative;overflow:hidden;
+    }
+    .feature-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);border-color:transparent;}
+    .feature-card .icon-wrap{
+      width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;
+    }
+    .feature-card .icon-wrap svg{width:24px;height:24px;}
+    .feature-card h3{font-size:1.12rem;font-weight:600;margin-bottom:10px;}
+    .feature-card p{color:var(--muted);font-size:0.92rem;}
+    .icon-a{background:linear-gradient(135deg,#5B5FEF,#8B5CF6);}
+    .icon-b{background:linear-gradient(135deg,#2DD4BF,#5B5FEF);}
+    .icon-c{background:linear-gradient(135deg,#8B5CF6,#2DD4BF);}
+
+    .dash-section{background:var(--ink);color:#fff;border-radius:32px;margin:0 24px;padding:90px 5%;}
+    .dash-section .section-head p{color:#B7B9D6;}
+    .dash-section .section-head h2{color:#fff;}
+    .dash-section .section-eyebrow{color:#B7E8DE;}
+    .dash-mock{
+      max-width:1000px;margin:0 auto;background:#191B33;border:1px solid #2C2F58;border-radius:22px;
+      box-shadow:0 30px 80px rgba(0,0,0,0.45);overflow:hidden;display:grid;grid-template-columns:220px 1fr;
+    }
+    .dash-side{
+      background:#14162B;border-right:1px solid #2C2F58;padding:26px 18px;display:flex;flex-direction:column;gap:6px;
+    }
+    .dash-side .db-brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:0.94rem;margin-bottom:26px;padding:0 8px;font-family:'Poppins',sans-serif;}
+    .dash-side .db-item{
+      padding:11px 12px;border-radius:10px;font-size:0.86rem;font-weight:500;color:#9EA1C4;
+      display:flex;align-items:center;gap:10px;transition:.2s;
+    }
+    .dash-side .db-item.active{background:rgba(91,95,239,0.18);color:#fff;}
+    .dash-side .db-item .dotmini{width:6px;height:6px;border-radius:50%;background:#5B5FEF;}
+    .dash-main{padding:30px 34px;}
+    .dash-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:26px;flex-wrap:wrap;gap:16px;}
+    .dash-top h3{font-size:1.3rem;font-weight:600;font-family:'Poppins',sans-serif;}
+    .dash-top p{color:#9EA1C4;font-size:0.86rem;margin-top:4px;}
+    .dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:26px;}
+    .stat-card{background:#1F2142;border:1px solid #2C2F58;border-radius:14px;padding:18px;}
+    .stat-card .lbl{font-size:0.76rem;color:#9EA1C4;margin-bottom:8px;}
+    .stat-card .num{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:600;}
+    .stat-card .num.up{color:#4ADE80;}
+    .dash-body{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;}
+    .dash-panel{background:#1F2142;border:1px solid #2C2F58;border-radius:14px;padding:20px;}
+    .dash-panel h4{font-size:0.9rem;font-weight:600;margin-bottom:16px;}
+    .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;font-size:0.78rem;color:#9EA1C4;}
+    .bar-row span.day{width:34px;}
+    .bar-track{flex:1;height:8px;background:#2C2F58;border-radius:100px;overflow:hidden;}
+    .bar-fill{height:100%;border-radius:100px;background:var(--grad-1);}
+    .dash-timer-ring{
+      width:150px;height:150px;border-radius:50%;margin:10px auto 18px;background:conic-gradient(var(--teal) 0 55%, #2C2F58 0);
+      display:flex;align-items:center;justify-content:center;
+    }
+    .dash-timer-ring .inner{
+      width:118px;height:118px;border-radius:50%;background:#1F2142;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    }
+    .dash-timer-ring .inner .t{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:600;}
+    .dash-timer-ring .inner .s{font-size:0.68rem;color:#9EA1C4;margin-top:2px;}
+
+    .benefits-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+    .benefit-card{
+      text-align:left;padding:28px 24px;border-radius:18px;background:var(--panel);
+      border:1px solid var(--line);transition:.25s;
+    }
+    .benefit-card:hover{border-color:var(--primary);box-shadow:var(--shadow-md);transform:translateY(-4px);}
+    .benefit-card .num-ring{
+      width:40px;height:40px;border-radius:50%;margin-bottom:16px;
+      display:flex;align-items:center;justify-content:center;background:var(--lavender);
+    }
+    .benefit-card .num-ring svg{width:19px;height:19px;color:var(--primary);}
+    .benefit-card h3{font-size:1.02rem;font-weight:600;margin-bottom:8px;}
+    .benefit-card p{font-size:0.88rem;color:var(--muted);}
+
+    .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+    .testi-card{
+      background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+      padding:30px;display:flex;flex-direction:column;gap:18px;transition:.25s;
+    }
+    .testi-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+    .stars{display:flex;gap:3px;}
+    .stars svg{width:16px;height:16px;color:#F5B942;}
+    .testi-card p.quote{font-size:0.95rem;color:var(--ink-soft);flex:1;}
+    .testi-person{display:flex;align-items:center;gap:12px;}
+    .testi-avatar{
+      width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      color:#fff;font-weight:700;font-size:0.85rem;flex-shrink:0;
+    }
+    .testi-person .name{font-weight:600;font-size:0.9rem;}
+    .testi-person .role{font-size:0.78rem;color:var(--muted);}
+
+    .cta-band{
+      margin:0 24px;border-radius:32px;padding:80px 40px;text-align:center;
+      background:var(--grad-1);position:relative;overflow:hidden;color:#fff;
+    }
+    .cta-band::before,.cta-band::after{
+      content:'';position:absolute;border-radius:50%;background:rgba(255,255,255,0.08);
+    }
+    .cta-band::before{width:400px;height:400px;top:-160px;left:-120px;}
+    .cta-band::after{width:300px;height:300px;bottom:-140px;right:-80px;}
+    .cta-band h2{font-size:2.3rem;font-weight:700;margin-bottom:14px;position:relative;z-index:1;}
+    .cta-band p{font-size:1.05rem;opacity:0.92;max-width:480px;margin:0 auto 30px;position:relative;z-index:1;}
+    .cta-band .btn-primary{background:#fff;color:var(--primary-dark);box-shadow:0 12px 30px rgba(0,0,0,0.18);position:relative;z-index:1;}
+    .cta-band .btn-primary:hover{transform:translateY(-2px);box-shadow:0 18px 38px rgba(0,0,0,0.24);}
+
+    footer{background:var(--ink);color:#B7B9D6;padding:80px 0 32px;margin-top:100px;}
+    .footer-grid{
+      display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:50px;border-bottom:1px solid #2C2F58;
+    }
+    .footer-brand .brand{color:#fff;margin-bottom:14px;}
+    .footer-brand p{font-size:0.88rem;max-width:280px;margin-bottom:20px;}
+    .footer-social{display:flex;gap:10px;}
+    .footer-social a{
+      width:38px;height:38px;border-radius:10px;background:#1F2142;display:flex;align-items:center;justify-content:center;
+      transition:.2s;border:1px solid #2C2F58;
+    }
+    .footer-social a:hover{background:var(--primary);border-color:var(--primary);}
+    .footer-social svg{width:17px;height:17px;color:#fff;}
+    .footer-col h4{color:#fff;font-size:0.88rem;font-weight:600;margin-bottom:18px;}
+    .footer-col ul{display:flex;flex-direction:column;gap:12px;}
+    .footer-col a{font-size:0.86rem;transition:.2s;}
+    .footer-col a:hover{color:#fff;}
+    .footer-bottom{
+      display:flex;justify-content:space-between;align-items:center;padding-top:28px;font-size:0.8rem;flex-wrap:wrap;gap:12px;
+    }
+
+    @media (max-width:980px){
+      .hero-grid{grid-template-columns:1fr;gap:56px;}
+      .hero p.lead{max-width:100%;}
+      .hero-visual{max-width:460px;margin:0 auto;width:100%;}
+      .features-grid{grid-template-columns:repeat(2,1fr);}
+      .benefits-grid{grid-template-columns:repeat(2,1fr);}
+      .testi-grid{grid-template-columns:repeat(2,1fr);}
+      .footer-grid{grid-template-columns:1fr 1fr;gap:30px;}
+      .dash-mock{grid-template-columns:1fr;}
+      .dash-side{display:none;}
+      .dash-body{grid-template-columns:1fr;}
+      .container{padding:0 24px;}
+      .nav-links{display:none;}
+      .nav-toggle-btn{display:block;}
+      .cta-band,.dash-section{margin:0 16px;}
+    }
+    @media (max-width:720px){
+      .hero{padding:84px 0 60px;}
+      .hero h1{font-size:2.55rem;}
+      .section-head h2,.cta-band h2{font-size:1.9rem;}
+      .features-grid,.benefits-grid,.testi-grid,.footer-grid,.dash-stats{grid-template-columns:1fr;}
+      .nav{height:68px;}
+      .hero-actions{gap:12px;}
+      .float-card.timer{left:0;}
+      .float-card.streak{right:0;}
+      .dash-main{padding:22px 18px;}
+      .dash-section{padding:56px 18px;}
+      .cta-band{padding:64px 22px;}
+      section{padding:84px 0;}
+    }
+    @media (max-width:480px){
+      .container{padding:0 16px;}
+      .hero h1{font-size:2.15rem;}
+      .hero p.lead{font-size:1rem;}
+      .btn{width:100%;}
+      .hero-actions{flex-direction:column;align-items:stretch;}
+      .play-link{justify-content:center;}
+      .panel-big-ring{width:146px;height:146px;}
+      .panel-big-ring .inner{width:114px;height:114px;}
+      .dash-timer-ring{width:128px;height:128px;}
+      .dash-timer-ring .inner{width:102px;height:102px;}
+      .footer-bottom{flex-direction:column;align-items:flex-start;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#top">
+        <span class="brand-mark">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 12.5L10 16.5L18 7.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        StudyFlow
+      </a>
+
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#features">Features</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#testimonials">Reviews</a>
+      </nav>
+
+      <div class="nav-cta">
+        <a class="btn btn-ghost btn-small" href="#">Login</a>
+        <a class="btn btn-primary btn-small" href="#">Get Started</a>
+
+        <!-- Checkbox toggle + label acts as button -->
+        <input type="checkbox" id="nav-toggle">
+        <label for="nav-toggle" class="nav-toggle-btn" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </label>
+      </div>
+
+      <div class="mobile-menu">
+        <a href="#features">Features</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#testimonials">Reviews</a>
+        <a href="#">Login</a>
+        <a href="#">Get Started</a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-glow"></div>
+      <div class="container hero-grid">
+        <div class="hero-copy reveal">
+          <span class="eyebrow"><span class="dot"></span> Smart study planning</span>
+          <h1>Master your <span class="grad">study time</span> with calm focus.</h1>
+          <p class="lead">StudyFlow helps you plan sessions, track progress, and stay consistent with a clean dashboard designed for serious learners.</p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#">Start free</a>
+            <a class="play-link" href="#">
+              <span class="play-circle">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M8 5v14l11-7z"></path>
+                </svg>
+              </span>
+              Watch demo
+            </a>
+          </div>
+
+          <div class="hero-proof">
+            <div class="avatars">
+              <span style="background:#5B5FEF;">A</span>
+              <span style="background:#8B5CF6;">S</span>
+              <span style="background:#2DD4BF;">R</span>
+            </div>
+            <div class="hero-proof-text"><strong>2,500+</strong> students use StudyFlow every week.</div>
+          </div>
+        </div>
+
+        <div class="hero-visual reveal" style="animation-delay:.2s;">
+          <div class="float-card timer">
+            <div class="ring"><div class="ring-inner">68%</div></div>
+            <div>
+              <div class="label">Today progress</div>
+              <div class="value">4h 12m</div>
+            </div>
+          </div>
+
+          <div class="hero-panel">
+            <div class="panel-topbar">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="title">Daily focus</div>
+            </div>
+
+            <div class="panel-big-ring">
+              <div class="inner">
+                <div class="time">01:45</div>
+                <div class="tag">Study session</div>
+              </div>
+            </div>
+
+            <div class="panel-tasks">
+              <div class="panel-task">
+                <div class="check done"></div>
+                <span class="txt">Revise Data Structures</span>
+                <span class="tag-pill" style="background:#2DD4BF;">Done</span>
+              </div>
+              <div class="panel-task">
+                <div class="check pending"></div>
+                <span class="txt">Practice C Programs</span>
+                <span class="tag-pill" style="background:#8B5CF6;">Next</span>
+              </div>
+              <div class="panel-task">
+                <div class="check pending"></div>
+                <span class="txt">Read lecture notes</span>
+                <span class="tag-pill" style="background:#5B5FEF;">Plan</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="float-card streak">
+            <div>
+              <div class="label">Streak</div>
+              <div class="value">12 days</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow"><span class="ring-tick"></span> Features</span>
+          <h2>Everything you need to stay on track</h2>
+          <p>Plan sessions, stay motivated, and measure progress without clutter or distraction.</p>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card reveal">
+            <div class="icon-wrap icon-a">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 6h16M4 12h10M4 18h13" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Smart scheduling</h3>
+            <p>Organize your tasks into focused study blocks with a simple, distraction-free planner.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="icon-wrap icon-b">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3v18M3 12h18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Progress tracking</h3>
+            <p>See your daily completion, streaks, and time spent learning in one clear dashboard.</p>
+          </article>
+
+          <article class="feature-card reveal">
+            <div class="icon-wrap icon-c">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2l3 7 7 1-5 5 1 7-6-4-6 4 1-7-5-5 7-1 3-7z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Motivation boost</h3>
+            <p>Build consistency with gentle reminders, streak rewards, and visible progress markers.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard">
+      <div class="dash-section">
+        <div class="section-head">
+          <span class="section-eyebrow"><span class="ring-tick"></span> Dashboard preview</span>
+          <h2>See your study routine at a glance</h2>
+          <p>Track focus time, weekly growth, and task completion with a clean interface.</p>
+        </div>
+
+        <div class="dash-mock">
+          <aside class="dash-side">
+            <div class="db-brand">
+              <span class="brand-mark" style="width:28px;height:28px;border-radius:8px;"></span>
+              StudyFlow
+            </div>
+            <div class="db-item active"><span class="dotmini"></span> Overview</div>
+            <div class="db-item"><span class="dotmini" style="background:#2DD4BF;"></span> Sessions</div>
+            <div class="db-item"><span class="dotmini" style="background:#8B5CF6;"></span> Tasks</div>
+            <div class="db-item"><span class="dotmini" style="background:#F59E0B;"></span> Reports</div>
+          </aside>
+
+          <div class="dash-main">
+            <div class="dash-top">
+              <div>
+                <h3>Weekly performance</h3>
+                <p>Updated today at 7:45 PM</p>
+              </div>
+              <a class="btn btn-primary btn-small" href="#">Export report</a>
+            </div>
+
+            <div class="dash-stats">
+              <div class="stat-card">
+                <div class="lbl">Focus hours</div>
+                <div class="num">24.5</div>
+              </div>
+              <div class="stat-card">
+                <div class="lbl">Tasks done</div>
+                <div class="num up">18</div>
+              </div>
+              <div class="stat-card">
+                <div class="lbl">Streak</div>
+                <div class="num">12</div>
+              </div>
+            </div>
+
+            <div class="dash-body">
+              <div class="dash-panel">
+                <h4>Study time by day</h4>
+                <div class="bar-row"><span class="day">Mon</span><div class="bar-track"><div class="bar-fill" style="width:78%"></div></div><span>78%</span></div>
+                <div class="bar-row"><span class="day">Tue</span><div class="bar-track"><div class="bar-fill" style="width:62%"></div></div><span>62%</span></div>
+                <div class="bar-row"><span class="day">Wed</span><div class="bar-track"><div class="bar-fill" style="width:85%"></div></div><span>85%</span></div>
+                <div class="bar-row"><span class="day">Thu</span><div class="bar-track"><div class="bar-fill" style="width:54%"></div></div><span>54%</span></div>
+              </div>
+
+              <div class="dash-panel">
+                <h4>Focus session</h4>
+                <div class="dash-timer-ring">
+                  <div class="inner">
+                    <div class="t">45m</div>
+                    <div class="s">remaining</div>
+                  </div>
+                </div>
+                <div style="text-align:center;color:#9EA1C4;font-size:0.84rem;">Current goal: Complete C practice set</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFITS -->
+    <section id="benefits">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow"><span class="ring-tick"></span> Benefits</span>
+          <h2>Built to improve consistency</h2>
+          <p>Keep momentum with a tool that helps you stay organized and focused every day.</p>
+        </div>
+
+        <div class="benefits-grid">
+          <article class="benefit-card reveal">
+            <div class="num-ring">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Less decision fatigue</h3>
+            <p>Know what to study next without wasting time planning from scratch.</p>
+          </article>
+
+          <article class="benefit-card reveal">
+            <div class="num-ring">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Clear daily progress</h3>
+            <p>Watch your progress build up with simple visuals and useful feedback.</p>
+          </article>
+
+          <article class="benefit-card reveal">
+            <div class="num-ring">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Finish more tasks</h3>
+            <p>Break your workload into smaller steps that are easier to complete.</p>
+          </article>
+
+          <article class="benefit-card reveal">
+            <div class="num-ring">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 2l2.7 6.1L21 11l-6.3 2.9L12 20l-2.7-6.1L3 11l6.3-2.9L12 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Stay motivated</h3>
+            <p>Build a routine that feels rewarding instead of overwhelming.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-eyebrow"><span class="ring-tick"></span> Reviews</span>
+          <h2>Students love the simple flow</h2>
+          <p>Here’s what users say about keeping their study routine under control.</p>
+        </div>
+
+        <div class="testi-grid">
+          <article class="testi-card reveal">
+            <div class="stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+            </div>
+            <p class="quote">“The layout is so clean that I actually enjoy planning my sessions every day.”</p>
+            <div class="testi-person">
+              <div class="testi-avatar" style="background:#5B5FEF;">R</div>
+              <div><div class="name">Riya</div><div class="role">Engineering student</div></div>
+            </div>
+          </article>
+
+          <article class="testi-card reveal">
+            <div class="stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+            </div>
+            <p class="quote">“I use it for C programming practice, and the progress tracker keeps me consistent.”</p>
+            <div class="testi-person">
+              <div class="testi-avatar" style="background:#8B5CF6;">A</div>
+              <div><div class="name">Arun</div><div class="role">Computer science student</div></div>
+            </div>
+          </article>
+
+          <article class="testi-card reveal">
+            <div class="stars">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.3l-6.18 3.25 1.18-6.88L2 8.76l6.91-1L12 1.5l3.09 6.26 6.91 1-5 4.91 1.18 6.88z"/></svg>
+            </div>
+            <p class="quote">“The dashboard feels professional, and it works well even on my phone.”</p>
+            <div class="testi-person">
+              <div class="testi-avatar" style="background:#2DD4BF;">M</div>
+              <div><div class="name">Meera</div><div class="role">Graduate student</div></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section>
+      <div class="cta-band">
+        <h2>Ready to study smarter?</h2>
+        <p>Start building a consistent study routine with a beautiful dashboard that keeps you focused.</p>
+        <a class="btn btn-primary" href="#">Create your free account</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand">
+            <span class="brand-mark">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 12.5L10 16.5L18 7.5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            StudyFlow
+          </div>
+          <p>Plan, focus, and track your learning in one elegant study companion.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 5.8c-.8.4-1.7.7-2.6.8a4.5 4.5 0 0 0 2-2.5c-.9.5-1.9.9-3 .9A4.4 4.4 0 0 0 12.8 9c0 .3 0 .6.1.9-3.7-.2-7-2-9.1-4.8-.4.6-.6 1.3-.6 2 0 1.4.7 2.7 1.8 3.5-.7 0-1.4-.2-2-.5v.1c0 2 1.4 3.7 3.3 4.1-.4.1-.9.1-1.3.1-.3 0-.6 0-.9-.1.6 1.7 2.1 2.9 4 2.9A8.9 8.9 0 0 1 2 19.5a12.5 12.5 0 0 0 6.8 2"/></svg>
+            </a>
+            <a href="#" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 2.8A5.2 5.2 0 1 1 7.8 12 5.2 5.2 0 0 1 12 6.8zm0 2a3.2 3.2 0 1 0 3.2 3.2A3.2 3.2 0 0 0 12 8.8zm5.4-3.1a1.1 1.1 0 1 1-1.1 1.1 1.1 1.1 0 0 1 1.1-1.1z"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Pricing</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Help center</a></li>
+            <li><a href="#">Privacy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 StudyFlow. All rights reserved.</div>
+        <div>Designed for focused learning.</div>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
