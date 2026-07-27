@@ -38,7 +38,7 @@ A modern, responsive, and interactive Temperature Converter built using **HTML, 
 
 ## 📂 Project Structure
 
-```
+
 Smart-Temperature-Converter/
 │
 ├── index.html
